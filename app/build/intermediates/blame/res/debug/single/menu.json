@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\res\\merged\\debug\\menu\\search.xml",
+        "source": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\src\\main\\res\\menu\\search.xml"
+    },
+    {
+        "merged": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\res\\merged\\debug\\menu\\drawer.xml",
+        "source": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\src\\main\\res\\menu\\drawer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\res\\merged\\debug\\menu\\activity_search_drawer.xml",
+        "source": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\src\\main\\res\\menu\\activity_search_drawer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\res\\merged\\debug\\menu\\main.xml",
+        "source": "C:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\src\\main\\res\\menu\\main.xml"
+    }
+]

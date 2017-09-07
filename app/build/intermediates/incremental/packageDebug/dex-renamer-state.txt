@@ -1,0 +1,4 @@
+#Thu Sep 07 23:38:52 SGT 2017
+base.0=C\:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+renamed.0=classes.dex
+file.0=C\:\\Users\\Diodel Gerona\\Documents\\Android Projects\\LawApp\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
