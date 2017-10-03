@@ -16,6 +16,8 @@
 package com.book.law.lawapp.ui.main;
 
 import com.book.law.lawapp.base.BaseView;
+import com.book.law.lawapp.model.BaseHighlight;
+import com.book.law.lawapp.model.UserProfile;
 
 /**
  * Created by janisharali on 27/01/17.
@@ -34,7 +36,8 @@ public interface MainMvpView extends BaseView {
     void updateUserProfilePic(String currentUserProfilePicUrl);
 
     void updateAppVersion();
-
+    void getUserProfile(UserProfile userProfile);
+    void getUserHighlights(BaseHighlight highlights);
     void closeNavigationDrawer();
 
     void lockDrawer();

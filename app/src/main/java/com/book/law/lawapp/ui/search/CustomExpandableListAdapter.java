@@ -1,8 +1,12 @@
 package com.book.law.lawapp.ui.search;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.book.law.lawapp.R;
+import com.book.law.lawapp.utils.CommonUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +58,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.expandedListItem);
         ImageView imageView = (ImageView) convertView
                 .findViewById(R.id.imageView);
-        if(expandedListPosition == 3)
+        if(expandedListPosition == 0 &&listPosition == 0)
         {
             imageView.setVisibility(View.VISIBLE);
             Log.e("expandedListText",expandedListText);
@@ -63,6 +68,16 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             }
             else
                 imageView.setImageResource(R.drawable.red);
+        }
+        if(expandedListPosition == 5 || listPosition == 5){
+            expandedListTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            expandedListTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    displayDialog("Alert","Download full text?");
+                }
+            });
         }
 
         expandedListTextView.setText(expandedListText);
@@ -114,5 +129,28 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
+    }
+    public  void displayDialog(String title, String message){
+        android.support.v7.app.AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new android.support.v7.app.AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new android.support.v7.app.AlertDialog.Builder(context);
+        }
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+//                        SearchFragment.setDownloadManager(context);
+
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

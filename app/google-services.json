@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "304908714657",
+    "project_id": "total-cedar-102911"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304908714657:android:dfb23eddb73aef2f",
+        "android_client_info": {
+          "package_name": "com.book.law.lawapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304908714657-6cehtbut80enggf5ja1btons9fe8reud.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.book.law.lawapp",
+            "certificate_hash": "786de429fb14c8a8c305ebe8ef0e005d1319926a"
+          }
+        },
+        {
+          "client_id": "304908714657-bbkh468kcbhdnip2dpskrc1kd50fjmud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABieZok54bHo0U174IIf91i2bMtCLR2Ro"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

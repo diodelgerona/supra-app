@@ -17,19 +17,18 @@ package com.book.law.lawapp.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,8 +39,11 @@ import com.book.law.lawapp.BuildConfig;
 import com.book.law.lawapp.R;
 import com.book.law.lawapp.base.BaseActivity;
 import com.book.law.lawapp.base.FragmentInteractionListiner;
-import com.book.law.lawapp.ui.search.BlankFragment;
+import com.book.law.lawapp.model.BaseHighlight;
+import com.book.law.lawapp.ui.login.LoginActivity;
+import com.book.law.lawapp.model.UserProfile;
 import com.book.law.lawapp.ui.search.SearchFragment;
+import com.book.law.lawapp.utils.AppConstants;
 import com.book.law.lawapp.utils.RoundedImageView;
 
 import java.util.ArrayList;
@@ -54,10 +56,11 @@ import butterknife.ButterKnife;
  * Created by janisharali on 27/01/17.
  */
 
-public class MainActivity extends BaseActivity implements MainMvpView ,BlankFragment.OnFragmentInteractionListener ,FragmentInteractionListiner{
+public class MainActivity extends BaseActivity implements MainMvpView ,FragmentInteractionListiner{
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    private TextView tvEmail,tvFirstName,tvLastName,tvAddress,tvLogout;
 
     @BindView(R.id.drawer_view)
     DrawerLayout mDrawer;
@@ -75,7 +78,8 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
     private RoundedImageView mProfileImageView;
 
     private ActionBarDrawerToggle mDrawerToggle;
-
+    private SharedPreferences sharedpreferences;
+    private  String userId;
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         return intent;
@@ -88,24 +92,40 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
 
         setUnBinder(ButterKnife.bind(this));
         presenter = new MainPresenter(this);
+        sharedpreferences = getSharedPreferences(AppConstants.PREF_NAME,
+                Context.MODE_PRIVATE);
+        userId = sharedpreferences.getString(AppConstants.LOGIN_USER_ID,"");
         setUp();
     }
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
 //        FragmentManager fragmentManager = getSupportFragmentManager();
-//        Fragment fragment = fragmentManager.findFragmentByTag(AboutFragment.TAG);
+//        Fragment fragment = fragmentManager.findFragmentByTag(SearchFragment.TAG);
 //        if (fragment == null) {
-//            super.onBackPressed();
+//
 //        } else {
-////            onFragmentDetached(AboutFragment.TAG);
+//            onFragmentDetached(SearchFragment.TAG);
 //        }
     }
-
     @Override
     public void updateAppVersion() {
         String version = getString(R.string.version) + " " + BuildConfig.VERSION_NAME;
         mAppVersionTextView.setText(version);
+    }
+
+    @Override
+    public void getUserProfile(UserProfile userProfile) {
+        tvEmail.setText(((userProfile.getEmail() == null) ?  "No Email" : userProfile.getEmail()));
+        tvFirstName.setText(((userProfile.getFirst_name() == null) ?"No FirstName" : userProfile.getFirst_name()));
+        tvLastName.setText(((userProfile.getLast_name() == null) ?"No LastName" : userProfile.getLast_name()));
+        tvAddress.setText(((userProfile.getAddress() == null) ?"No Address" : userProfile.getAddress()));
+    }
+
+    @Override
+    public void getUserHighlights(BaseHighlight highlights) {
+        Log.e("Highlights",highlights.getHighlights().size()+"");
     }
 
     @Override
@@ -136,31 +156,24 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
         super.onDestroy();
     }
 
+//    @Override
+//    public void onFragmentAttached() {
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .setCustomAnimations(R.anim.slide_left, R.anim.slide_right)
+//                .add(R.id.cl_root_view, SearchFragment.newInstance(), SearchFragment.TAG)
+//                .commit();
+//    }
+
     @Override
     public void onFragmentAttached() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .disallowAddToBackStack()
-                .setCustomAnimations(R.anim.slide_left, R.anim.slide_right)
-                .add(R.id.cl_root_view, SearchFragment.newInstance(), SearchFragment.TAG)
-                .commit();
+        super.onFragmentAttached();
     }
 
     @Override
     public void onFragmentDetached(String tag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentByTag(tag);
-        if (fragment != null) {
-            fragmentManager
-                    .beginTransaction()
-                    .disallowAddToBackStack()
-                    .setCustomAnimations(R.anim.slide_left, R.anim.slide_right)
-                    .remove(fragment)
-                    .commitNow();
-            unlockDrawer();
-        }
+        super.onFragmentDetached(tag);
     }
-
 
     @Override
     public void lockDrawer() {
@@ -172,33 +185,6 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
     public void unlockDrawer() {
         if (mDrawer != null)
             mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Drawable drawable = item.getIcon();
-        if (drawable instanceof Animatable) {
-            ((Animatable) drawable).start();
-        }
-        switch (item.getItemId()) {
-            case R.id.action_cut:
-                return true;
-            case R.id.action_copy:
-                return true;
-            case R.id.action_share:
-                return true;
-            case R.id.action_delete:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -264,8 +250,23 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
     void setupNavMenu() {
         View headerLayout = mNavigationView.getHeaderView(0);
         mProfileImageView = (RoundedImageView) headerLayout.findViewById(R.id.iv_profile_pic);
-        mNameTextView = (TextView) headerLayout.findViewById(R.id.tv_name);
-        mEmailTextView = (TextView) headerLayout.findViewById(R.id.tv_email);
+        tvFirstName = (TextView) headerLayout.findViewById(R.id.tv_first_name);
+        tvLastName = (TextView) headerLayout.findViewById(R.id.tv_last_name);
+        tvEmail = (TextView) headerLayout.findViewById(R.id.tv_mail);
+        tvAddress = (TextView) headerLayout.findViewById(R.id.tv_address);
+        tvLogout = (TextView) headerLayout.findViewById(R.id.tv_logout);
+        tvLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLoading();
+                clearStoredPref();
+                new Handler().postDelayed(new Runnable() {@Override public void run() {
+                    hideLoading();
+                    startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                    finish();
+                }}, 300);
+            }
+        });
 
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -273,26 +274,32 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         mDrawer.closeDrawer(GravityCompat.START);
                         switch (item.getItemId()) {
-                            case R.id.nav_item_about:
-                                presenter.loadSearchFragment();
-//                                mPresenter.onDrawerOptionAboutClick();
-                                return true;
-                            case R.id.nav_item_rate_us:
-//                                mPresenter.onDrawerRateUsClick();
-                                return true;
-                            case R.id.nav_item_feed:
-//                                mPresenter.onDrawerMyFeedClick();
-                                return true;
                             case R.id.nav_item_logout:
+//                                showLoading();
+//                                clearStoredPref();
+//                                new Handler().postDelayed(new Runnable() {@Override public void run() {
+//                                    hideLoading();
+//                                    startActivity(new Intent(MainActivity.this,LoginActivity.class));
+//                                    finish();
+//                                }}, 300);
+                            presenter.getUserHighlights("1");
 //                                mPresenter.onDrawerOptionLogoutClick();
+                                
                                 return true;
                             default:
                                 return false;
                         }
                     }
                 });
+        presenter.getUserProfileResponse(userId);
     }
-
+    public void clearStoredPref()
+    {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(AppConstants.PREF_NAME, MODE_PRIVATE); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
     @Override
     public void openLoginActivity() {
 //        startActivity(LoginActivity.getStartIntent(this));
@@ -301,12 +308,10 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
 
     @Override
     public void showMainActivity() {
-        lockDrawer();
         getSupportFragmentManager()
                 .beginTransaction()
-                .disallowAddToBackStack()
                 .setCustomAnimations(R.anim.slide_left, R.anim.slide_right)
-                .add(R.id.cl_root_view, SearchFragment.newInstance("",""),"BlankFragment" )
+                .add(R.id.cl_root_view, SearchFragment.newInstance("",""),"SearchFragment" )
                 .commit();
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.add(R.id.cl_root_view, BlankFragment.newInstance("",""),"BlankFragment" );
@@ -318,11 +323,6 @@ public class MainActivity extends BaseActivity implements MainMvpView ,BlankFrag
         if (mDrawer != null) {
             mDrawer.closeDrawer(Gravity.START);
         }
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     @Override

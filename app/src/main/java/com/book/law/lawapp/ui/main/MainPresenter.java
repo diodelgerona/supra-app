@@ -15,7 +15,17 @@
 
 package com.book.law.lawapp.ui.main;
 
-import java.util.List;
+import android.util.Log;
+
+import com.book.law.lawapp.model.BaseHighlight;
+import com.book.law.lawapp.rest.APIServices;
+import com.book.law.lawapp.rest.ApiUtils;
+import com.book.law.lawapp.model.UserProfile;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by janisharali on 27/01/17.
@@ -25,9 +35,13 @@ public class MainPresenter{
 
     private static final String TAG = "MainPresenter";
     private MainMvpView view;
+    private APIServices mAPIService;
+    private CompositeDisposable mCompositeDisposable;
     public MainPresenter(MainMvpView view)
     {
         this.view = view;
+        mCompositeDisposable = new CompositeDisposable();
+        mAPIService = ApiUtils.getAPIService();
     }
 
     public void onDrawerOptionAboutClick() {
@@ -39,6 +53,57 @@ public class MainPresenter{
     {
         view.showMainActivity();
     }
+    public void getUserProfileResponse(String userId){
+        view.showLoading();
+        mCompositeDisposable.add(mAPIService.getUserProfile(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<UserProfile >() {
+                    @Override
+                    public void onNext(UserProfile value) {
+                        view.getUserProfile(value);
+                        view.hideLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.onError(e.getMessage());
+                        view.hideLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+
+                    }
+                ));
+    }
+    public void getUserHighlights(String userId){
+        view.showLoading();
+        mCompositeDisposable.add(mAPIService.getHighlights(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<BaseHighlight>() {
+                    @Override
+                    public void onNext(BaseHighlight value) {
+                        Log.e("Value",value.getHighlights().size()+"");
+//                        view.getUserHighlights(value);
+                        view.hideLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.onError(e.getMessage());
+                        view.hideLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                }
+                ));
+    }
+
     public void onDrawerOptionLogoutClick() {
         view.showLoading();
 

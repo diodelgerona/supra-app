@@ -5,6 +5,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.UiThread;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import butterknife.Unbinder;
 import butterknife.internal.Utils;
 import com.book.law.lawapp.R;
@@ -18,6 +19,7 @@ public class SearchFragment_ViewBinding implements Unbinder {
   public SearchFragment_ViewBinding(SearchFragment target, View source) {
     this.target = target;
 
+    target.lvResult = Utils.findRequiredViewAsType(source, R.id.lvResult, "field 'lvResult'", ListView.class);
     target.expandableListView = Utils.findRequiredViewAsType(source, R.id.expandableListView, "field 'expandableListView'", ExpandableListView.class);
   }
 
@@ -28,6 +30,7 @@ public class SearchFragment_ViewBinding implements Unbinder {
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 
+    target.lvResult = null;
     target.expandableListView = null;
   }
 }

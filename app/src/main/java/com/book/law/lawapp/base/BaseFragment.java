@@ -6,8 +6,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.TextView;
 
+import com.book.law.lawapp.R;
 import com.book.law.lawapp.utils.CommonUtils;
 
 import butterknife.Unbinder;
@@ -98,7 +102,15 @@ public abstract class BaseFragment extends android.support.v4.app.Fragment imple
             mActivity.openActivityOnTokenExpire();
         }
     }
-
+    public void showSnackBar(String message) {
+        Snackbar snackbar = Snackbar.make(getView().findViewById(android.R.id.content),
+                message, Snackbar.LENGTH_SHORT);
+        View sbView = snackbar.getView();
+        TextView textView = (TextView) sbView
+                .findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
+        snackbar.show();
+    }
     public BaseActivity getBaseActivity() {
         return mActivity;
     }

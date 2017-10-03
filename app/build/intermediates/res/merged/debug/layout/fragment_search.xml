@@ -15,7 +15,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:queryHint="Search" />
+    <ListView
+        android:id="@+id/lvResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+    </ListView>
     <ExpandableListView
         android:id="@+id/expandableListView"
         android:layout_width="match_parent"

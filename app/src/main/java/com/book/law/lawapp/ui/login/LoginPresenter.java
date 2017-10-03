@@ -16,14 +16,109 @@
 package com.book.law.lawapp.ui.login;
 
 
+import android.util.Log;
+
+import com.book.law.lawapp.R;
+import com.book.law.lawapp.model.User;
+import com.book.law.lawapp.rest.APIServices;
+import com.book.law.lawapp.rest.ApiUtils;
+import com.book.law.lawapp.utils.CommonUtils;
+import com.book.law.lawapp.utils.ErrorParser;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
+
+import java.io.IOException;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+
 /**
  * Created by janisharali on 27/01/17.
  */
 
 public class LoginPresenter {
 
-//    private static final String TAG = "LoginPresenter";
+    private static final String TAG = "LoginPresenter";
+    private LoginView view;
+    private APIServices mAPIService;
+    private CompositeDisposable mCompositeDisposable;
+    public LoginPresenter(LoginView view){
+        this.view = view;
+        mAPIService = ApiUtils.getAPIService();
+        mCompositeDisposable = new CompositeDisposable();
+    }
+    public void onGoogleLoginClick() {
+//        view.openMainActivity();
+    }
+    public void normalLoginClick(String type,String token,String email,String password){
+        if (email == null || email.isEmpty()) {
+            view.onError(R.string.empty_email);
+            return;
+        }
+        if (!CommonUtils.isEmailValid(email)) {
+            view.onError(R.string.invalid_email);
+            return;
+        }
+        if (password == null || password.isEmpty()) {
+            view.onError(R.string.empty_password);
+            return;
+        }
+
+        view.showLoading();
+        mCompositeDisposable.add(mAPIService.getLoginCredentialsFromRemote(type, token, email, password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<User>() {
+                    @Override
+                    public void onNext(User value) {
+                        if(value.getErrorMsg() != null)
+                            view.onError(value.getErrorMsg());
+                        else
+                            view.openMainActivity(value);
+                        view.hideLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof HttpException) {
+                            ResponseBody body = ((HttpException) e).response().errorBody();
+                            Gson gson = new Gson();
+                            TypeAdapter<ErrorParser> adapter = gson.getAdapter
+                                    (ErrorParser
+                                            .class);
+                            try {
+                                ErrorParser errorParser =
+                                        adapter.fromJson(body.string());
+                                Log.e("errorParser",errorParser.getMessage());
+                                String errorMsg =((errorParser == null) || (errorParser.getMessage() == null) ?errorParser.getMsg() : (errorParser.getMessage()));
+                                view.onError(errorMsg);
+                                view.hideLoading();
+
+                            } catch (IOException ee) {
+                                Log.e("IOException",ee.getMessage());
+                                ee.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                }));
+
+    }
+    public void onDestroy()
+    {
+        if(mCompositeDisposable != null)
+            mCompositeDisposable.dispose();
+    }
 //
+
 //    public LoginPresenter(DataManager dataManager,
 //                          SchedulerProvider schedulerProvider,
 //                          CompositeDisposable compositeDisposable) {

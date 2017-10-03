@@ -6,7 +6,7 @@ package com.book.law.lawapp.rest;
 
 public class ApiUtils {
 
-    public static final String BASE_URL = "http://www.mocky.io/";
+    public static final String BASE_URL = "http://10.0.3.2:8080/";
 
     public static APIServices getAPIService() {
         return RetrofitClient.getClient(BASE_URL).create(APIServices.class);
